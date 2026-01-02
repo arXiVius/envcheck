@@ -1,0 +1,37 @@
+{
+  "name": "envcheck",
+  "version": "1.0.0",
+  "description": "Fast CLI tool to validate environment variables and detect secrets.",
+  "license": "SEE LICENSE IN README.md",
+  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/envcheck.git"
+  },
+  "bin": {
+    "envcheck": "bin/envcheck.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/index.js --target=node22",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {
+    "@types/node": "^25.0.3",
+    "ajv": "^8.17.1",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "tsx": "^4.19.2"
+  }
+}

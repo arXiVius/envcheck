@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build and Bundles
+dist/
+*.tgz
+
+# Licensing Security (CRITICAL)
+# Never commit keys or local license state
+*.pem
+license.json
+
+# Environment Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Allow test file for verification suite
+!.env.test
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System and IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Internal Design/Spec
+project_spec.txt
+
+# Admin/Licensing Scripts
+# (Keep these local to prevent people from playing with keygen logic)
+scripts/
+private_der.base64

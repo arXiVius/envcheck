@@ -1,0 +1,301 @@
+envcheck — Automated Licensing Spec (Gumroad + Vercel)
+0. Goals (Non-Negotiable)
+
+✅ License delivery is automatic
+
+✅ CLI remains 100% offline
+
+✅ No runtime servers
+
+✅ No accounts, no auth
+
+✅ Free Vercel tier only
+
+✅ Gumroad remains the source of sales truth
+
+1. High-Level Architecture
+Customer buys envcheck Pro on Gumroad
+            ↓
+Gumroad generates a random license key (order token)
+            ↓
+Gumroad sends webhook → Vercel API
+            ↓
+Vercel signs envcheck Pro license (Ed25519)
+            ↓
+Signed license is attached to Gumroad purchase
+            ↓
+Customer copies license → envcheck activate
+            ↓
+CLI verifies locally (offline forever)
+
+
+Critical rule:
+👉 The CLI never talks to Gumroad or Vercel.
+
+2. Roles & Trust Model
+Gumroad
+
+Handles payments
+
+Generates order-scoped license key
+
+Triggers webhook
+
+Displays post-purchase content
+
+Vercel (you control)
+
+Signs licenses
+
+Holds private Ed25519 key
+
+Stateless (no DB)
+
+CLI (envcheck)
+
+Contains public Ed25519 key
+
+Verifies license locally
+
+No network access
+
+3. Gumroad Configuration
+3.1 Enable License Keys
+
+In Gumroad product settings:
+
+Enable “License keys”
+
+Result:
+
+Each purchase gets a unique Gumroad key, e.g.
+
+7F3A-9KQ2-LM81
+
+
+⚠️ This key is not trusted by the CLI.
+
+3.2 Webhook Setup
+
+Webhook URL:
+
+https://<your-vercel-app>.vercel.app/api/gumroad
+
+
+Events:
+
+sale.created
+
+3.3 Post-Purchase Content Template
+
+Set Gumroad product “Content” to:
+
+Your envcheck Pro license key:
+
+{{ENVCHK_LICENSE}}
+
+Activate it with:
+
+envcheck activate {{ENVCHK_LICENSE}}
+
+This license works fully offline.
+
+
+{{ENVCHK_LICENSE}} will be injected by Vercel.
+
+4. Vercel API Specification
+Endpoint
+POST /api/gumroad
+
+Runtime
+
+Vercel Serverless Function
+
+Node.js 18+
+
+4.1 Environment Variables (Vercel)
+ENVCHK_PRIVATE_KEY=<base64-ed25519-private-key>
+GUMROAD_PRODUCT_ID=<your-product-id>
+
+
+Optional (recommended):
+
+GUMROAD_WEBHOOK_SECRET=<secret>
+
+4.2 Incoming Payload (Simplified)
+{
+  "product_id": "abc123",
+  "license_key": "7F3A-9KQ2-LM81",
+  "email": "buyer@example.com",
+  "sale_id": "sale_xyz"
+}
+
+4.3 Validation Rules
+
+Webhook request is accepted only if:
+
+product_id === GUMROAD_PRODUCT_ID
+
+license_key exists
+
+(Optional) Webhook signature is valid
+
+If invalid → return 400.
+
+5. License Generation (Server-Side)
+5.1 Payload to Sign
+{
+  "product": "envcheck",
+  "tier": "pro",
+  "license_id": "7F3A-9KQ2-LM81",
+  "issued_at": "YYYY-MM-DD"
+}
+
+
+Notes:
+
+license_id = Gumroad license key
+
+No expiry
+
+No machine binding
+
+5.2 Signing
+
+Algorithm: Ed25519
+
+Private key loaded from env
+
+Payload JSON → Base64
+
+Signature → Base64
+
+5.3 Final License Format
+ENVCHK-PRO-<BASE64_PAYLOAD>.<BASE64_SIGNATURE>
+
+
+Example:
+
+ENVCHK-PRO-eyJwcm9kdWN0IjoiZW52Y2hlY2siLCJ0aWVyIjoicHJvIn0=.MEUCIQD...
+
+6. Returning License to Gumroad
+Mechanism
+
+Vercel responds with:
+
+{
+  "ENVCHK_LICENSE": "ENVCHK-PRO-XXXX.YYYY"
+}
+
+
+Gumroad:
+
+Injects this into post-purchase content
+
+Displays it immediately to the buyer
+
+Includes it in receipt email
+
+✅ No email code required
+✅ No database required
+
+7. CLI Activation (Unchanged)
+
+User runs:
+
+envcheck activate ENVCHK-PRO-XXXX.YYYY
+
+
+CLI behavior:
+
+Validate prefix
+
+Decode payload
+
+Verify signature using embedded public key
+
+Check product === "envcheck" and tier === "pro"
+
+Write ~/.envcheck/license.json
+
+Exit success
+
+No network calls.
+
+8. Failure Modes & Handling
+Gumroad webhook fails
+
+Gumroad retries automatically
+
+No customer impact
+
+Vercel is down
+
+Purchase still completes
+
+License delivery delayed
+
+Webhook retries later
+
+Customer loses key
+
+You regenerate manually (same process)
+
+Old key still valid (no revocation)
+
+9. Security Guarantees
+
+Gumroad keys alone cannot unlock Pro
+
+Only signed licenses work
+
+Private key never leaves Vercel
+
+CLI cannot be tricked without key compromise
+
+10. Explicit Non-Goals
+
+❌ Online license verification
+❌ CLI → server communication
+❌ Revocation lists
+❌ DRM / obfuscation
+❌ Machine locking
+
+11. Minimal Implementation Checklist
+Gumroad
+
+ License keys enabled
+
+ Webhook configured
+
+ Post-purchase content template set
+
+Vercel
+
+ /api/gumroad endpoint deployed
+
+ Private key in env vars
+
+ Payload signing implemented
+
+CLI
+
+ Public key embedded
+
+ Offline verification only
+
+12. Final Statement (Lock This)
+
+This spec:
+
+Preserves trust
+
+Automates sales
+
+Costs $0/month
+
+Requires no CLI changes
+
+Scales cleanly
+
+Implement exactly this. Then stop. Ship.
