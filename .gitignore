@@ -41,3 +41,4 @@ project_spec.txt
 # (Keep these local to prevent people from playing with keygen logic)
 scripts/
 private_der.base64
+.vercel
