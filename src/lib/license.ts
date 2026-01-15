@@ -7,7 +7,7 @@ export class LicenseService {
     // Embedded Public Key (Ed25519)
     // In a real app, this would be obfuscated or packed better.
     private static PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MCowBQYDK2VwAyEA6CzH4z5WW81A0VAgo+ybCSEpZWRbzKvIZAfEDOavjsY=
+MCowBQYDK2VwAyEAUB5xnHy1rsC/Tfv1VJvbMpPQ2IyfQMQ5RVGpf8e6vEA=
 -----END PUBLIC KEY-----`;
 
     private static getLicensePath() {
@@ -22,9 +22,6 @@ MCowBQYDK2VwAyEA6CzH4z5WW81A0VAgo+ybCSEpZWRbzKvIZAfEDOavjsY=
     static async activate(key: string): Promise<boolean> {
         // Key Format: ENVCHK-PRO-<BASE64_PAYLOAD>.<BASE64_SIGNATURE>
         const parts = key.split('-');
-        // Expected: ["ENVCHK", "PRO", "<PAYLOAD>.<SIGNATURE>"]
-        // Wait, payload and signature are separated by `.` so they are in the last part if we split by `-` strictly?
-        // Or "ENVCHK-PRO-PAYLOAD.SIG"
         if (parts.length < 3 || parts[0] !== 'ENVCHK' || parts[1] !== 'PRO') {
             return false;
         }
@@ -37,8 +34,6 @@ MCowBQYDK2VwAyEA6CzH4z5WW81A0VAgo+ybCSEpZWRbzKvIZAfEDOavjsY=
 
         try {
             // Verify Signature
-            // CRITICAL: We verify the signature against the BASE64 string itself
-            // to match the Vercel signing logic exactly.
             const dataToVerify = Buffer.from(payloadB64);
             const signatureBuffer = Buffer.from(signatureB64, 'base64');
 
@@ -75,13 +70,21 @@ MCowBQYDK2VwAyEA6CzH4z5WW81A0VAgo+ybCSEpZWRbzKvIZAfEDOavjsY=
             const content = readFileSync(path, 'utf8');
             const data = JSON.parse(content);
             
-            // Re-verify the license key format or just trust the local file?
-            // Online spec says: "Read on every run. No network access." 
-            // Doesn't say we must re-verify signature every run, but it's safer to check data integrity.
-            // For MVP simplicity, we check tier.
             return data.tier === 'pro';
         } catch (e) {
             return false;
+        }
+    }
+
+    static getLicenseDetails(): any | null {
+        try {
+            const path = LicenseService.getLicensePath();
+            if (!existsSync(path)) return null;
+            
+            const content = readFileSync(path, 'utf8');
+            return JSON.parse(content);
+        } catch (e) {
+            return null;
         }
     }
 }

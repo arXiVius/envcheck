@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>envcheck Pro — Activation</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --border: #30363d;
+            --code-bg: #161b22;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        code {
+            display: block;
+            background: #0d1117;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        ul {
+            text-align: left;
+            padding-left: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .troubleshooting {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .heart {
+            color: #ff7b72;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>envcheck Pro</h1>
+        <p class="subtitle">Thanks for your support <span class="heart">❤️</span></p>
+
+        <div class="card">
+            <h3>Use your License Key</h3>
+            <p>Your license key was shown on the previous screen. To unlock Pro features, run this command in your terminal:</p>
+            
+            <code>envcheck activate &lt;LICENSE_KEY&gt;</code>
+
+            <ul>
+                <li>Works completely offline</li>
+                <li>No account or sign-in required</li>
+                <li>One-time purchase, lifetime access</li>
+            </ul>
+        </div>
+
+        <div class="troubleshooting">
+            <p><strong>Missed your license key?</strong></p>
+            <p>Go back to the Ko-fi confirmation page or check your email receipt.</p>
+            <p style="margin-top: 1.5rem;">
+                <a href="https://github.com/arXiVius/envcheck" target="_blank">View Documentation →</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

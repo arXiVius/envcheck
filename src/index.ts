@@ -127,11 +127,47 @@ program.command('pro')
     console.log('  • ' + chalk.cyan('JSON Output') + ': Integrate with CI/CD pipelines.');
     console.log('  • ' + chalk.cyan('Offline Mode') + ': Verify anywhere, anytime.');
     console.log('');
-    console.log(chalk.yellow('  Price: $15 (One-time)'));
-    console.log('  Buy here: [Gumroad Link]');
+    console.log(chalk.green('  Price: $15 ') + chalk.strikethrough.dim('$25') + chalk.dim(' (Early Access)'));
     console.log('');
-    console.log('  To activate:');
-    console.log('    $ envcheck activate <LICENSE_KEY>');
+    console.log('  1. Buy License:');
+    console.log('     $ envcheck buy');
+    console.log('');
+    console.log('  2. Activate:');
+    console.log('     $ envcheck activate <LICENSE_KEY>');
+  });
+
+program.command('buy')
+  .description('Open purchase page')
+  .action(() => {
+    const url = 'https://ko-fi.com/s/your-item-id';
+    console.log(chalk.yellow('Opening purchase page...'));
+    console.log(chalk.dim(url));
+    
+    // Cross-platform open
+    const start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+    import('child_process').then(cp => {
+      cp.exec(`${start} ${url}`);
+    });
+  });
+
+program.command('license')
+  .description('Show license status')
+  .action(() => {
+    const details = LicenseService.getLicenseDetails();
+    if (details) {
+      console.log(chalk.bold('✅ envcheck Pro Active'));
+      console.log('');
+      console.log(`  Tier:      ${details.tier}`);
+      console.log(`  Issued:    ${details.payload?.issued_at || 'Unknown'}`);
+      console.log(`  Order ID:  ${details.payload?.order_id || 'N/A'}`);
+      console.log('');
+      console.log(chalk.dim(`  Key: ${details.license_key.substring(0, 15)}...`));
+    } else {
+      console.log(chalk.yellow('⚠ No active license found.'));
+      console.log('');
+      console.log('  To buy: $ envcheck buy');
+      console.log('  To activate: $ envcheck activate <KEY>');
+    }
   });
 
 program.parse();

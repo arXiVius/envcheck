@@ -121,10 +121,10 @@ envcheck .env --json
 
 ## Get Pro
 
-**Price**: $15 (One-time purchase)
+**Price**: $15 (will be ~~$25~~)
 **Includes**: Lifetime updates, infinite local use.
 
-1. **Buy License**: [Gumroad Link Here]
+1. **Buy License**: [Ko-fi Shop](https://ko-fi.com/s/your-item-id)
 2. **Activate**:
    ```bash
    envcheck activate <YOUR-LICENSE-KEY>
